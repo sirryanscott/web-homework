@@ -1,11 +1,19 @@
 defmodule HomeworkWeb.Resolvers.UsersResolver do
   alias Homework.Users
+  alias Homework.Companies
 
   @doc """
   Get a list of users
   """
   def users(_root, args, _info) do
     {:ok, Users.list_users(args)}
+  end
+
+  @doc """
+  Get the company associated with a user
+  """
+  def company(_root, _args, %{source: %{company_id: company_id}}) do
+    {:ok, Companies.get_company!(company_id)}
   end
 
   @doc """
@@ -47,7 +55,7 @@ defmodule HomeworkWeb.Resolvers.UsersResolver do
         {:ok, user}
 
       error ->
-        {:error, "could not update user: #{inspect(error)}"}
+        {:error, "could not delete user: #{inspect(error)}"}
     end
   end
 end

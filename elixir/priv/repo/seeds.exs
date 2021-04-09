@@ -13,6 +13,23 @@
 alias Homework.Users.User
 alias Homework.Transactions.Transaction
 alias Homework.Merchants.Merchant
+alias Homework.Companies.Company
+
+#
+# populate Companies table
+#
+Homework.Repo.insert!(%Company{
+    id: "a0bbd2a1-dac7-427e-9d92-38e476bb832c",
+    name: "Company 1",
+    credit_line: 10000,
+    available_credit: 8000
+})
+Homework.Repo.insert!(%Company{
+    id: "a0bbd2a1-dac7-427e-9d92-38e476bb832b",
+    name: "Company 2",
+    credit_line: 15000,
+    available_credit: 12500
+})
 
 #
 # populate User table
@@ -21,22 +38,26 @@ Homework.Repo.insert!(%User{
     id: "a0bbd2a1-dac7-427e-9d92-38e476bb832e",
     dob: "04/03/1972",
     first_name: "Thomas",
-    last_name: "Clark"
+    last_name: "Clark",
+    company_id: "a0bbd2a1-dac7-427e-9d92-38e476bb832c",
 })
 Homework.Repo.insert!(%User{
     dob: "07/04/1994",
     first_name: "Paul",
-    last_name: "Johnson"
+    last_name: "Johnson",
+    company_id: "a0bbd2a1-dac7-427e-9d92-38e476bb832c",
 })
 Homework.Repo.insert!(%User{
     dob: "10/17/1989",
     first_name: "Jordan",
-    last_name: "Witcomb"
+    last_name: "Witcomb",
+    company_id: "a0bbd2a1-dac7-427e-9d92-38e476bb832b",
 })
 Homework.Repo.insert!(%User{
     dob: "09/07/1965",
     first_name: "Bjorn",
-    last_name: "Borgensson"
+    last_name: "Borgensson",
+    company_id: "a0bbd2a1-dac7-427e-9d92-38e476bb832b",
 })
 
 

@@ -47,7 +47,7 @@ defmodule HomeworkWeb.Resolvers.MerchantsResolver do
         {:ok, merchant}
 
       error ->
-        {:error, "could not update merchant: #{inspect(error)}"}
+        {:error, "could not delete merchant: #{inspect(error)}"}
     end
   end
 end

@@ -8,6 +8,9 @@ defmodule Homework.Transactions do
 
   alias Homework.Transactions.Transaction
 
+  @dollars_to_cents 100
+  @cents_to_dollars 0.01
+
   @doc """
   Returns the list of transactions.
 
@@ -18,7 +21,7 @@ defmodule Homework.Transactions do
 
   """
   def list_transactions(_args) do
-    Repo.all(Transaction)
+    for t <- Repo.all(Transaction), do: convert_transaction_amount(t, @cents_to_dollars)
   end
 
   @doc """
@@ -35,7 +38,10 @@ defmodule Homework.Transactions do
       ** (Ecto.NoResultsError)
 
   """
-  def get_transaction!(id), do: Repo.get!(Transaction, id)
+  def get_transaction!(id) do
+    Repo.get!(Transaction, id)
+    |> convert_transaction_amount(@cents_to_dollars)
+  end
 
   @doc """
   Creates a transaction.
@@ -51,7 +57,7 @@ defmodule Homework.Transactions do
   """
   def create_transaction(attrs \\ %{}) do
     %Transaction{}
-    |> Transaction.changeset(attrs)
+    |> Transaction.changeset(convert_transaction_amount(attrs, @dollars_to_cents))
     |> Repo.insert()
   end
 
@@ -69,7 +75,7 @@ defmodule Homework.Transactions do
   """
   def update_transaction(%Transaction{} = transaction, attrs) do
     transaction
-    |> Transaction.changeset(attrs)
+    |> Transaction.changeset(convert_transaction_amount(attrs, @dollars_to_cents))
     |> Repo.update()
   end
 
@@ -100,5 +106,13 @@ defmodule Homework.Transactions do
   """
   def change_transaction(%Transaction{} = transaction, attrs \\ %{}) do
     Transaction.changeset(transaction, attrs)
+  end
+
+  @doc """
+  Converts the amount for a transaction from dollars to cents (or vice versa)
+  multiplier is either 0.01 or 100 depending on conversion
+  """
+  def convert_transaction_amount(transaction, multiplier) do
+    Map.update!(transaction, :amount, fn amount -> if amount do amount * multiplier end end)
   end
 end

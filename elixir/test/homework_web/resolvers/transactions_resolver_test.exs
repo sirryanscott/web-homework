@@ -1,10 +1,11 @@
-defmodule Homework.TransactionsTest do
+defmodule Homework.TransactionsResolverTest do
   use Homework.DataCase
 
   alias Homework.Merchants
   alias Homework.Transactions
   alias Homework.Users
   alias Homework.Companies
+  alias HomeworkWeb.Resolvers.TransactionsResolver
 
   describe "transactions" do
     alias Homework.Transactions.Transaction
@@ -97,54 +98,28 @@ defmodule Homework.TransactionsTest do
       transaction
     end
 
-    test "list_transactions/1 returns all transactions", %{valid_attrs: valid_attrs} do
+    test "TransactionsResolver.transactions/3 returns all transactions", %{valid_attrs: valid_attrs} do
       transaction = transaction_fixture(valid_attrs)
       transaction_from_db = Transactions.get_transaction!(transaction.id)
-      assert Transactions.list_transactions([]) == [transaction_from_db]
+      {:ok, all_transactions} = TransactionsResolver.transactions([], [], [])
+      assert [transaction_from_db] == all_transactions
     end
 
-    test "get_transaction!/1 returns the transaction with given id", %{valid_attrs: valid_attrs} do
-      transaction = transaction_fixture(valid_attrs)
-      transaction_from_db = Transactions.get_transaction!(transaction.id)
-      assert transaction_from_db.id == transaction.id
-      assert transaction_from_db.amount == 42
-      assert transaction_from_db.credit == transaction.credit
-      assert transaction_from_db.debit == transaction.debit
-      assert transaction_from_db.description == transaction.description
-      assert transaction_from_db.merchant_id == transaction.merchant_id
-      assert transaction_from_db.user_id == transaction.user_id
+    test "TransactionsResolver.create_transaction/3 creates a new transaction", %{valid_attrs: valid_attrs} do
+      assert Transactions.list_transactions([]) == []
+      assert TransactionsResolver.create_transaction([], valid_attrs, [])
+      assert length(Transactions.list_transactions([])) == 1
     end
 
-    test "create_transaction/1 with valid data creates a transaction", %{
-      valid_attrs: valid_attrs,
-      merchant1: merchant1,
-      user1: user1
-    } do
-      assert {:ok, %Transaction{} = transaction} = Transactions.create_transaction(valid_attrs)
-      assert transaction.amount == 4200
-      assert transaction.credit == true
-      assert transaction.debit == true
-      assert transaction.description == "some description"
-      assert transaction.merchant_id == merchant1.id
-      assert transaction.user_id == user1.id
-    end
-
-    test "create_transaction/1 with invalid data returns error changeset", %{
-      invalid_attrs: invalid_attrs
-    } do
-      assert {:error, %Ecto.Changeset{}} = Transactions.create_transaction(invalid_attrs)
-    end
-
-    test "update_transaction/2 with valid data updates the transaction", %{
+    test "TransactionsResolver.update_transaction/3 with valid data updates a new transaction", %{
       valid_attrs: valid_attrs,
       update_attrs: update_attrs,
       merchant2: merchant2,
       user2: user2
     } do
-      transaction = transaction_fixture(valid_attrs)
 
-      assert {:ok, %Transaction{} = transaction} =
-               Transactions.update_transaction(transaction, update_attrs)
+      transaction = transaction_fixture(valid_attrs)
+      {:ok, %Transaction{} = transaction} = TransactionsResolver.update_transaction([], Map.merge(%{id: transaction.id}, update_attrs), [])
 
       assert transaction.amount == 4300
       assert transaction.credit == false
@@ -154,28 +129,23 @@ defmodule Homework.TransactionsTest do
       assert transaction.user_id == user2.id
     end
 
-    test "update_transaction/2 with invalid data returns error changeset", %{
+    test "TransactionsResolver.update_transaction/3 with invalid data returns error", %{
       valid_attrs: valid_attrs,
-      invalid_attrs: invalid_attrs
+      invalid_attrs: invalid_attrs,
     } do
+
       transaction = transaction_fixture(valid_attrs)
-      transaction = Transactions.get_transaction!(transaction.id)
-
-      assert {:error, %Ecto.Changeset{}} =
-               Transactions.update_transaction(transaction, invalid_attrs)
-
-      assert transaction == Transactions.get_transaction!(transaction.id)
+      {:error, message}= TransactionsResolver.update_transaction([], Map.merge(%{id: transaction.id}, invalid_attrs), [])
+      assert String.contains?(message, "could not update transaction:")
     end
 
-    test "delete_transaction/1 deletes the transaction", %{valid_attrs: valid_attrs} do
-      transaction = transaction_fixture(valid_attrs)
-      assert {:ok, %Transaction{}} = Transactions.delete_transaction(transaction)
-      assert_raise Ecto.NoResultsError, fn -> Transactions.get_transaction!(transaction.id) end
-    end
+    test "TransactionsResolver.delete_transaction/3 deletes a new transaction", %{
+      valid_attrs: valid_attrs,
+    } do
 
-    test "change_transaction/1 returns a transaction changeset", %{valid_attrs: valid_attrs} do
       transaction = transaction_fixture(valid_attrs)
-      assert %Ecto.Changeset{} = Transactions.change_transaction(transaction)
+      TransactionsResolver.delete_transaction([], %{id: transaction.id}, [])
+      assert Transactions.list_transactions([]) == []
     end
   end
 end
