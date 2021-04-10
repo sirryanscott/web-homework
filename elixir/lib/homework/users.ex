@@ -22,6 +22,14 @@ defmodule Homework.Users do
   end
 
   @doc """
+  Fuzzy searches for user by first or last name
+  """
+  def search_users(_args) do
+    # query = 
+    # |> Repo.all()
+  end
+
+  @doc """
   Gets a single user.
 
   Raises `Ecto.NoResultsError` if the User does not exist.

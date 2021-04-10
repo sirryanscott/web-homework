@@ -22,6 +22,14 @@ defmodule Homework.Companies do
   end
 
   @doc """
+  Fuzzy searches for company by name
+  """
+  def search_companies(_args) do
+    # query
+    # |> Repo.all()
+  end
+
+  @doc """
   Gets a single Company 
 
   Raises `Ecto.NoResultsError` if the Company does not exist.

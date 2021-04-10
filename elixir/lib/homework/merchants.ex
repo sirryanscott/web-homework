@@ -22,6 +22,14 @@ defmodule Homework.Merchants do
   end
 
   @doc """
+  Fuzzy searches for merchant by name
+  """
+  def search_merchants(_args) do
+    # query
+    # |> Repo.all()
+  end
+
+  @doc """
   Gets a single merchant.
 
   Raises `Ecto.NoResultsError` if the Merchant does not exist.
